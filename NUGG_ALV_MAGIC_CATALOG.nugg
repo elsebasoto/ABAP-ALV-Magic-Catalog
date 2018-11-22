@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<nugget name="ALV_MAGIC_CATALOG">
+ <CLAS CLSNAME="ZCL_ALV" VERSION="1" LANGU="S" DESCRIPT="Funciones adicionales para ALV" CATEGORY="00" EXPOSURE="2" STATE="1" RELEASE="0" CLSFINAL="X" CLSCCINCL="X" FIXPT="X" UNICODE="X" CLSBCCAT="00" DURATION_TYPE="0 " RISK_LEVEL="0 " ZSAPLINK_PLUGIN_MAJOR_VERSION="0 " ZSAPLINK_PLUGIN_MINOR_VERSION="1 " ZSAPLINK_PLUGIN_BUILD_VERSION="0 " ZSAPLINK_PLUGIN_INFO1="ZSAPLINK_CLASS is part of the main ZSAPLINK project --&gt; This plugin found there instead of ZSAPLINK_PLUGINS projects" ZSAPLINK_PLUGIN_INFO2="SAPLINK homepage: https://www.assembla.com/spaces/saplink/wiki" ZSAPLINK_PLUGIN_INFO3="Download from https://www.assembla.com/code/saplink/subversion/nodes" ZSAPLINK_PLUGIN_INFO4="and navigate to:  trunk -&gt; core -&gt; ZSAPLINK -&gt; CLAS -&gt; ZSAPLINK_CLASS.slnk">
+  <types CLSNAME="ZCL_ALV" CMPNAME="TY_HEADING_N" VERSION="1" LANGU="S" EXPOSURE="0" STATE="1" EDITORDER="1 " TYPTYPE="4" SRCROW1="6 " SRCCOLUMN1="4 " SRCROW2="8 " SRCCOLUMN2="27 " TYPESRC_LENG="0 " TYPESRC="BEGIN OF ty_heading_n,
+           rollname TYPE dd04t-rollname,
+         END OF ty_heading_n
+"/>
+  <types CLSNAME="ZCL_ALV" CMPNAME="TY_HEADING_T" VERSION="1" LANGU="S" EXPOSURE="0" STATE="1" EDITORDER="2 " TYPTYPE="4" SRCROW1="10 " SRCCOLUMN1="4 " SRCROW2="13 " SRCCOLUMN2="27 " TYPESRC_LENG="0 " TYPESRC="BEGIN OF ty_heading_t,
+           rollname TYPE dd04t-rollname,
+           reptext  TYPE dd04t-reptext,
+         END OF ty_heading_t
+"/>
+  <types CLSNAME="ZCL_ALV" CMPNAME="TY_DD04T" VERSION="1" LANGU="S" EXPOSURE="0" STATE="1" EDITORDER="3 " TYPTYPE="4" SRCROW1="15 " SRCCOLUMN1="4 " SRCROW2="19 " SRCCOLUMN2="17 " TYPESRC_LENG="0 " TYPESRC="BEGIN OF ty_dd04t,
+          scrtext_s TYPE scrtext_s,
+          scrtext_m TYPE scrtext_m,
+          scrtext_l TYPE scrtext_l,
+   END OF ty_dd04t
+"/>
+  <localImplementation>*&quot;* local class implementation for public class
+*&quot;* use this source file for the implementation part of
+*&quot;* local helper classes</localImplementation>
+  <localTypes>*&quot;* use this source file for any type declarations (class
+*&quot;* definitions, interfaces or data types) you need for method
+*&quot;* implementation or private method&apos;s signature</localTypes>
+  <localMacros>*&quot;* use this source file for any macro definitions you need
+*&quot;* in the implementation part of the class</localMacros>
+  <typeUsage CLSNAME="ZCL_ALV" TYPEGROUP="ABAP" VERSION="1" TPUTYPE="0" EXPLICIT="X"/>
+  <forwardDeclaration>ABAP</forwardDeclaration>
+  <method CLSNAME="ZCL_ALV" CMPNAME="CONSTRUCTOR" VERSION="1" LANGU="S" DESCRIPT="Constructor" EXPOSURE="2" STATE="1" EDITORDER="1 " DISPID="0 " MTDTYPE="2" MTDDECLTYP="0" BCMTDCAT="00" BCMTDSYN="0">
+   <source>method CONSTRUCTOR.
+endmethod.</source>
+  </method>
+  <method CLSNAME="ZCL_ALV" CMPNAME="FILL_CATALOG_MERGE" VERSION="1" LANGU="S" DESCRIPT="Crea un Fieldcat de ALV según su estructura de salida" EXPOSURE="2" STATE="1" EDITORDER="3 " DISPID="0 " MTDTYPE="0" MTDDECLTYP="0" BCMTDCAT="00" BCMTDSYN="0">
+   <parameter CLSNAME="ZCL_ALV" CMPNAME="FILL_CATALOG_MERGE" SCONAME="STRUCTURE" VERSION="1" LANGU="S" CMPTYPE="1" MTDTYPE="0" EDITORDER="1 " DISPID="0 " PARDECLTYP="0" PARPASSTYP="1" TYPTYPE="1" TYPE="ANY"/>
+   <parameter CLSNAME="ZCL_ALV" CMPNAME="FILL_CATALOG_MERGE" SCONAME="TEXTS" VERSION="1" LANGU="S" DESCRIPT="Recuperar textos de diccionario" CMPTYPE="1" MTDTYPE="0" EDITORDER="2 " DISPID="0 " PARDECLTYP="0" PARPASSTYP="1" TYPTYPE="1" TYPE="CHAR1" PAROPTIONL="X"/>
+   <parameter CLSNAME="ZCL_ALV" CMPNAME="FILL_CATALOG_MERGE" SCONAME="CONVEXIT" VERSION="1" LANGU="S" DESCRIPT="Recuperar subrutina de conversion" CMPTYPE="1" MTDTYPE="0" EDITORDER="3 " DISPID="0 " PARDECLTYP="0" PARPASSTYP="1" TYPTYPE="1" TYPE="CHAR1" PAROPTIONL="X"/>
+   <parameter CLSNAME="ZCL_ALV" CMPNAME="FILL_CATALOG_MERGE" SCONAME="TABNAME" VERSION="1" LANGU="S" DESCRIPT="Nombre de tabla" CMPTYPE="1" MTDTYPE="0" EDITORDER="4 " DISPID="0 " PARDECLTYP="0" PARPASSTYP="1" TYPTYPE="1" TYPE="TABNAME"/>
+   <parameter CLSNAME="ZCL_ALV" CMPNAME="FILL_CATALOG_MERGE" SCONAME="FIELDCAT" VERSION="1" LANGU="S" DESCRIPT="Catálogo campo" CMPTYPE="1" MTDTYPE="0" EDITORDER="5 " DISPID="0 " PARDECLTYP="1" PARPASSTYP="1" TYPTYPE="1" TYPE="LVC_T_FCAT"/>
+   <source>METHOD fill_catalog_merge.
+
+  DATA: tl_components TYPE abap_compdescr_tab.
+
+  DATA: wl_fieldcat   TYPE lvc_s_fcat,
+        wl_texts      TYPE ty_dd04t,
+        wl_components TYPE abap_compdescr.
+
+  DATA: ol_element         TYPE REF TO cl_abap_elemdescr,
+        ol_descr_struc_ref TYPE REF TO cl_abap_structdescr.
+
+  DATA: vl_data_element TYPE rollname,
+        vl_tipo         TYPE c LENGTH 1.
+
+  FIELD-SYMBOLS: &lt;fsl_element&gt; TYPE ANY.
+
+  ol_descr_struc_ref ?= cl_abap_typedescr=&gt;describe_by_data( structure ).
+
+  tl_components = ol_descr_struc_ref-&gt;components.
+
+  LOOP AT tl_components INTO wl_components WHERE type_kind NE &apos;h&apos;.
+
+    CLEAR wl_fieldcat.
+
+    wl_fieldcat-fieldname = wl_components-name.
+    wl_fieldcat-tabname   = tabname.
+
+    ASSIGN COMPONENT sy-tabix OF STRUCTURE structure TO &lt;fsl_element&gt;.
+
+    TRY.
+        ol_element ?= cl_abap_typedescr=&gt;describe_by_data( &lt;fsl_element&gt; ).
+      CATCH cx_sy_move_cast_error.
+        CONTINUE.
+*     La excepción la tira cuando va a levantar el tipo tabla del estilo
+    ENDTRY.
+
+    vl_data_element = ol_element-&gt;absolute_name+6.
+
+    DESCRIBE FIELD &lt;fsl_element&gt; TYPE vl_tipo.
+
+    IF vl_tipo EQ &apos;C&apos;.
+      DESCRIBE FIELD &lt;fsl_element&gt; LENGTH wl_fieldcat-intlen IN CHARACTER MODE.
+    ENDIF.
+
+    IF texts IS NOT INITIAL.
+
+      CALL METHOD me-&gt;get_texts
+        EXPORTING
+          field = vl_data_element
+        RECEIVING
+          texts = wl_texts.
+
+      wl_fieldcat-scrtext_l = wl_texts-scrtext_l.
+      wl_fieldcat-scrtext_m = wl_texts-scrtext_m.
+      wl_fieldcat-scrtext_s = wl_texts-scrtext_s.
+
+    ENDIF.
+
+    IF convexit IS NOT INITIAL.
+
+      CALL METHOD me-&gt;get_conversion
+        EXPORTING
+          field    = vl_data_element
+        RECEIVING
+          convexit = wl_fieldcat-convexit.
+
+    ENDIF.
+
+    APPEND wl_fieldcat TO fieldcat.
+
+  ENDLOOP.
+
+ENDMETHOD.</source>
+  </method>
+  <method CLSNAME="ZCL_ALV" CMPNAME="GET_CONVERSION" VERSION="1" LANGU="S" DESCRIPT="Recupera las subrutina de conversion" EXPOSURE="0" STATE="1" EDITORDER="4 " DISPID="0 " MTDTYPE="0" MTDDECLTYP="0" BCMTDCAT="00" BCMTDSYN="0">
+   <parameter CLSNAME="ZCL_ALV" CMPNAME="GET_CONVERSION" SCONAME="FIELD" VERSION="1" LANGU="S" DESCRIPT="Elemento de datos (dominio semántico)" CMPTYPE="1" MTDTYPE="0" EDITORDER="1 " DISPID="0 " PARDECLTYP="0" PARPASSTYP="1" TYPTYPE="1" TYPE="ROLLNAME"/>
+   <parameter CLSNAME="ZCL_ALV" CMPNAME="GET_CONVERSION" SCONAME="CONVEXIT" VERSION="1" LANGU="S" DESCRIPT="Rutina de conversión" CMPTYPE="1" MTDTYPE="0" EDITORDER="2 " DISPID="0 " PARDECLTYP="3" PARPASSTYP="0" TYPTYPE="1" TYPE="CONVEXIT"/>
+   <source>METHOD get_conversion.
+
+  SELECT SINGLE convexit
+  FROM dd04l
+  INTO convexit
+  WHERE rollname = field
+    AND as4local = &apos;A&apos;
+    AND as4vers  = &apos;0000&apos;.
+
+ENDMETHOD.</source>
+  </method>
+  <method CLSNAME="ZCL_ALV" CMPNAME="GET_TEXTS" VERSION="1" LANGU="S" DESCRIPT="Recupera los textos del diccionario" EXPOSURE="0" STATE="1" EDITORDER="2 " DISPID="0 " MTDTYPE="0" MTDDECLTYP="0" BCMTDCAT="00" BCMTDSYN="0">
+   <parameter CLSNAME="ZCL_ALV" CMPNAME="GET_TEXTS" SCONAME="FIELD" VERSION="1" LANGU="S" DESCRIPT="Elemento de datos (dominio semántico)" CMPTYPE="1" MTDTYPE="0" EDITORDER="1 " DISPID="0 " PARDECLTYP="0" PARPASSTYP="1" TYPTYPE="1" TYPE="ROLLNAME"/>
+   <parameter CLSNAME="ZCL_ALV" CMPNAME="GET_TEXTS" SCONAME="TEXTS" VERSION="1" LANGU="S" CMPTYPE="1" MTDTYPE="0" EDITORDER="2 " DISPID="0 " PARDECLTYP="3" PARPASSTYP="0" TYPTYPE="1" TYPE="TY_DD04T"/>
+   <source>METHOD get_texts.
+
+  SELECT SINGLE scrtext_s
+                scrtext_m
+                scrtext_l
+  FROM dd04t
+  INTO texts
+  WHERE rollname   EQ field
+    AND ddlanguage EQ sy-langu
+    AND as4local   EQ &apos;A&apos;.
+
+ENDMETHOD.</source>
+  </method>
+ </CLAS>
+</nugget>
